@@ -1,0 +1,60 @@
+name: players-game
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: players_game
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d players_game"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile.dev
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/players_game
+      NEXT_TELEMETRY_DISABLED: "1"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./apps/web:/repo/apps/web
+      - ./package.json:/repo/package.json
+      - ./pnpm-workspace.yaml:/repo/pnpm-workspace.yaml
+      - web-node-modules:/repo/node_modules
+      - web-app-node-modules:/repo/apps/web/node_modules
+      - web-next-cache:/repo/apps/web/.next
+
+  pipelines:
+    build:
+      context: .
+      dockerfile: pipelines/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/players_game
+    volumes:
+      - ./pipelines:/repo/pipelines
+      - pipelines-venv:/opt/venv
+
+volumes:
+  postgres-data:
+  web-node-modules:
+  web-app-node-modules:
+  web-next-cache:
+  pipelines-venv:

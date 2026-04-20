@@ -1,0 +1,38 @@
+node_modules/
+.pnpm-store/
+
+.next/
+out/
+build/
+dist/
+
+.env
+.env.local
+.env.*.local
+
+*.log
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+__pycache__/
+*.pyc
+.venv/
+.uv/
+.pytest_cache/
+.ruff_cache/
+
+postgres-data/
+
+drizzle/migrations/meta/_journal.json.bak
+
+# Per-project Claude Code settings
+.claude/
+
+# Large data dumps (downloaded separately)
+pipelines/data/kaggle/*.csv
+pipelines/data/scraped/
+
+# Drizzle journal backups
+apps/web/drizzle/migrations/meta/_journal.json.bak

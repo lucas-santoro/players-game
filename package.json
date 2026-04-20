@@ -1,0 +1,17 @@
+{
+  "name": "players-game",
+  "private": true,
+  "version": "0.0.0",
+  "packageManager": "pnpm@10.4.1",
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "build": "pnpm --filter web build",
+    "lint": "pnpm --filter web lint",
+    "db:push": "pnpm --filter web db:push",
+    "db:studio": "pnpm --filter web db:studio",
+    "db:seed": "pnpm --filter web db:seed"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

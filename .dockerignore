@@ -1,0 +1,14 @@
+**/node_modules
+**/.next
+**/.turbo
+**/dist
+**/build
+**/__pycache__
+**/.venv
+**/.uv
+.git
+.gitignore
+.env
+.env.local
+postgres-data/
+*.log
