@@ -2,11 +2,185 @@
 
 :root {
   color-scheme: dark;
+
+  --color-ink: #0d0e10;
+  --color-ink-2: #14171a;
+  --color-ink-3: #1a1e23;
+  --color-line: #232830;
+  --color-line-strong: #2f3640;
+  --color-paper: #f4efe5;
+  --color-paper-dim: #c8c4ba;
+  --color-mute: #6b6f76;
+  --color-mute-2: #4a4e54;
+
+  --color-signal: #cdfb69;
+  --color-signal-dim: #8aac34;
+  --color-signal-deep: #2c3a14;
+
+  --color-warm: #e9b34a;
+  --color-warm-deep: #3a2c10;
+
+  --grain-opacity: 0.035;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 html, body {
-  height: 100%;
-  background: #0a0a0a;
-  color: #f5f5f5;
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-family: var(--font-display);
+  font-feature-settings: "ss01", "ss02", "kern";
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
+
+body {
+  background-image:
+    radial-gradient(circle at 0% 0%, rgba(205, 251, 105, 0.05) 0%, transparent 38%),
+    radial-gradient(circle at 100% 100%, rgba(233, 179, 74, 0.04) 0%, transparent 42%);
+  background-attachment: fixed;
+}
+
+/* Subtle film grain over the entire viewport */
+.grain {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  opacity: var(--grain-opacity);
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Hairline divider used between editorial sections */
+.hairline {
+  height: 1px;
+  background: var(--color-line);
+}
+
+/* Tabular numerics for any data display */
+.num {
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum", "zero", "ss01";
+}
+
+/* Eyebrow / micro labels — tiny uppercase tracking */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-mute);
+  font-weight: 500;
+}
+
+/* Display headline — Fraunces with optical-size pushed to display */
+.display {
+  font-family: var(--font-display);
+  font-variation-settings: "opsz" 144, "SOFT" 50;
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  line-height: 0.9;
+}
+
+.display-italic {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-variation-settings: "opsz" 144, "SOFT" 100;
+  font-weight: 500;
+}
+
+/* Soft button reset */
+button {
+  font-family: inherit;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: inherit;
+  padding: 0;
+}
+
+input {
+  font-family: inherit;
+}
+
+/* Selection */
+::selection {
+  background: var(--color-signal);
+  color: var(--color-ink);
+}
+
+/* Custom scrollbar in dropdowns */
+.scroll-custom::-webkit-scrollbar { width: 8px; }
+.scroll-custom::-webkit-scrollbar-track { background: transparent; }
+.scroll-custom::-webkit-scrollbar-thumb { background: var(--color-line-strong); border-radius: 4px; }
+.scroll-custom::-webkit-scrollbar-thumb:hover { background: var(--color-mute-2); }
+
+/* === Animations === */
+
+@keyframes tile-rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes guess-enter {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes counter-pulse {
+  0%   { transform: scale(1); }
+  18%  { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+
+@keyframes win-flash {
+  0%   { background-color: rgba(205, 251, 105, 0.0); }
+  35%  { background-color: rgba(205, 251, 105, 0.10); }
+  100% { background-color: rgba(205, 251, 105, 0.0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.tile-rise { animation: tile-rise 0.42s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; }
+.guess-enter { animation: guess-enter 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; }
+.counter-pulse { animation: counter-pulse 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.win-flash { animation: win-flash 1.6s ease-out; }
+
+/* Shimmer used on the score number on the win panel */
+.shimmer-text {
+  background: linear-gradient(
+    90deg,
+    var(--color-paper) 0%,
+    var(--color-signal) 50%,
+    var(--color-paper) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 3.5s ease-in-out infinite;
+}
+
+/* Decorative pitch-line corner ornament — used on guess cards */
+.corner-mark {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--color-signal);
+  opacity: 0.45;
+  pointer-events: none;
+}
+.corner-mark.tl { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+.corner-mark.tr { top: -1px; right: -1px; border-left: none; border-bottom: none; }
+.corner-mark.bl { bottom: -1px; left: -1px; border-right: none; border-top: none; }
+.corner-mark.br { bottom: -1px; right: -1px; border-left: none; border-top: none; }
