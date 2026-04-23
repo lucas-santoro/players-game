@@ -1,11 +1,17 @@
 import type { Metadata } from 'next';
-import { Fraunces, JetBrains_Mono } from 'next/font/google';
+import { Patrick_Hand, Caveat, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 
-const fraunces = Fraunces({
+const hand = Patrick_Hand({
   subsets: ['latin'],
-  variable: '--font-display',
-  axes: ['opsz', 'SOFT'],
+  weight: '400',
+  variable: '--font-hand',
+});
+
+const handBold = Caveat({
+  subsets: ['latin'],
+  weight: ['500', '700'],
+  variable: '--font-hand-bold',
 });
 
 const mono = JetBrains_Mono({
@@ -14,18 +20,18 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Players Game · Adivinhe o jogador do dia',
+  title: 'Players · Adivinhe o jogador do dia',
   description:
-    'Jogo diário no estilo Wordle com jogadores de futebol. Quanto menos tentativas, melhor.',
+    'Jogo diário no estilo Wordle com jogadores de futebol. Cada palpite vira um pino no campo.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className={`${fraunces.variable} ${mono.variable}`}>
-      <body>
-        <div className="grain" aria-hidden />
-        {children}
-      </body>
+    <html
+      lang="pt-BR"
+      className={`${hand.variable} ${handBold.variable} ${mono.variable}`}
+    >
+      <body>{children}</body>
     </html>
   );
 }

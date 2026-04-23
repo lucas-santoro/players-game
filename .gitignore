@@ -30,6 +30,9 @@ drizzle/migrations/meta/_journal.json.bak
 # Per-project Claude Code settings
 .claude/
 
+# Design prototype handoff (not part of the app)
+claude-design-prototype/
+
 # Large data dumps (downloaded separately)
 pipelines/data/kaggle/*.csv
 pipelines/data/scraped/
