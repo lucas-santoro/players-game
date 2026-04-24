@@ -145,8 +145,12 @@ export default function HomePage() {
   const tries = guesses.length;
   const target = guesses.find((g) => g.isCorrect)?.targetDetails ?? null;
 
-  // The newest guess (index 0) anchors the "stats this turn" chips.
+  // The chip strip below the pitch follows whichever guess is currently
+  // focused (clicked on the pitch or in the history). Defaults to the
+  // newest guess so it has something to show after a fresh palpite.
   const latestGuess = guesses[0];
+  const focusedGuessData =
+    guesses.find((g) => g.guess.id === focusedGuess) ?? latestGuess;
 
   async function submitGuess(playerId: number) {
     if (guessedIds.has(playerId) || isWon || loading) return;
@@ -254,7 +258,12 @@ export default function HomePage() {
             onFocus={(id) => setFocusedGuess(id)}
           />
           <Legend />
-          {latestGuess && !isWon && <StatsStrip guess={latestGuess} />}
+          {focusedGuessData && (
+            <StatsStrip
+              guess={focusedGuessData}
+              focused={focusedGuess === focusedGuessData.guess.id}
+            />
+          )}
           {!guesses.length && (
             <div className="empty-tip mt-1">
               o alvo aparece em algum lugar do campo · seu palpite vai mostrar onde
@@ -568,23 +577,35 @@ function Legend() {
   );
 }
 
-function StatsStrip({ guess }: { guess: GuessResponse }) {
+function StatsStrip({
+  guess,
+  focused,
+}: {
+  guess: GuessResponse;
+  focused: boolean;
+}) {
   return (
-    <div className="flex flex-wrap gap-2 px-1">
-      {STAT_CHIP_ORDER.map((key) => {
-        const cell = guess.breakdown[key];
-        if (!cell) return null;
-        const tone = cellTone(cell);
-        const v = cell.guessValue ?? '—';
-        const arrow = cell.hint === 'higher' ? ' ↑' : cell.hint === 'lower' ? ' ↓' : '';
-        const checkmark = cell.matched ? ' ✓' : '';
-        return (
-          <span key={key} className={`stat-chip ${tone}`}>
-            <span className="opacity-70">{ATTRIBUTE_LABELS[key]}</span>
-            <span>{v}{arrow}{checkmark}</span>
-          </span>
-        );
-      })}
+    <div className="flex flex-col gap-1 px-1">
+      <span className="label">
+        {focused ? 'palpite selecionado · ' : 'último palpite · '}
+        <span className="text-[color:var(--ink)]">{guess.guess.name}</span>
+      </span>
+      <div className="flex flex-wrap gap-2">
+        {STAT_CHIP_ORDER.map((key) => {
+          const cell = guess.breakdown[key];
+          if (!cell) return null;
+          const tone = cellTone(cell);
+          const v = cell.guessValue ?? '—';
+          const arrow = cell.hint === 'higher' ? ' ↑' : cell.hint === 'lower' ? ' ↓' : '';
+          const checkmark = cell.matched ? ' ✓' : '';
+          return (
+            <span key={key} className={`stat-chip ${tone}`}>
+              <span className="opacity-70">{ATTRIBUTE_LABELS[key]}</span>
+              <span>{v}{arrow}{checkmark}</span>
+            </span>
+          );
+        })}
+      </div>
     </div>
   );
 }
