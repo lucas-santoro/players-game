@@ -244,8 +244,8 @@ export default function HomePage() {
         </div>
       )}
 
-      <div className="mt-3 grid grid-cols-1 gap-4 lg:mt-2 lg:flex-1 lg:grid-cols-[1.5fr_1fr] lg:gap-5 lg:overflow-hidden">
-        <div className="flex flex-col gap-2 lg:overflow-hidden">
+      <div className="mt-3 grid grid-cols-1 gap-4 lg:mt-2 lg:min-h-0 lg:flex-1 lg:grid-cols-[1.5fr_1fr] lg:gap-5">
+        <div className="flex min-h-0 flex-col gap-2">
           <Pitch
             guesses={guesses}
             isWon={isWon}
@@ -262,7 +262,7 @@ export default function HomePage() {
           )}
         </div>
 
-        <div className="flex flex-col gap-2 lg:overflow-hidden">
+        <div className="flex min-h-0 flex-col gap-2">
           {isWon && target ? (
             <WinPanel
               guesses={guesses}
@@ -495,7 +495,8 @@ function Pitch({
           const tone = guessTone(g.totalScore, sameClubMatched, MAX_TOTAL_SCORE);
           const isFocused = focusedGuess === g.guess.id;
           const dimWhenWon = isWon && !isFocused ? 'opacity-50' : '';
-          const cls = ['pin', tone, isFocused ? 'focus' : '', dimWhenWon]
+          const tagAnchor = x >= 65 ? 'tag-left' : x <= 35 ? 'tag-right' : '';
+          const cls = ['pin', tone, isFocused ? 'focus' : '', dimWhenWon, tagAnchor]
             .filter(Boolean)
             .join(' ');
           const showTag = isFocused || isLatest;
@@ -529,8 +530,9 @@ function Pitch({
               null,
               target.id,
             );
+            const anchor = x >= 65 ? 'tag-left' : x <= 35 ? 'tag-right' : '';
             return (
-              <div className="pin win" style={{ top: `${y}%`, left: `${x}%` }}>
+              <div className={`pin win ${anchor}`} style={{ top: `${y}%`, left: `${x}%` }}>
                 <div className="bub">★</div>
                 <div className="tag">{target.name}</div>
               </div>
@@ -604,7 +606,7 @@ function GuessHistory({
       {guesses.length === 0 ? (
         <div className="note mt-2">faça seu primeiro palpite</div>
       ) : (
-        <div className="scroll-custom mt-2 min-h-0 flex-1 overflow-y-auto pr-1">
+        <div className="scroll-custom mt-2 min-h-0 flex-1 overflow-y-auto overflow-x-visible py-1 pr-2">
           {guesses.map((g, i) => {
             const number = guesses.length - i;
             const sameClubMatched = g.breakdown.sameCurrentClub?.matched ?? false;

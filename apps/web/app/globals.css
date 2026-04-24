@@ -171,7 +171,9 @@ input  { font-family: inherit; }
       var(--pitch-bg) 0 40px,
       var(--pitch-bg-2) 40px 80px
     );
-  overflow: hidden;
+  /* No overflow: hidden — pin tags and the win-state confetti deliberately
+     spill outside the pitch border. The pitch background itself is bounded
+     by the border anyway. */
 }
 
 .pitch::before,
@@ -237,6 +239,10 @@ input  { font-family: inherit; }
 .pin.lost .bub { background: var(--cold); color: #fff; }
 
 .pin .tag {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translate(-50%, 6px);
   font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 10px;
   letter-spacing: 0.06em;
@@ -246,6 +252,18 @@ input  { font-family: inherit; }
   border-radius: 5px;
   white-space: nowrap;
   box-shadow: 1px 1px 0 var(--ink);
+}
+.pin.tag-left .tag {
+  /* anchor the tag's RIGHT edge to the pin's centre — useful when the pin
+     sits near the right side of the pitch */
+  left: auto;
+  right: 50%;
+  transform: translate(15px, 6px);
+}
+.pin.tag-right .tag {
+  left: 50%;
+  right: auto;
+  transform: translate(-15px, 6px);
 }
 .pin.hit .tag  { background: var(--accent); color: #fff; }
 .pin.warm .tag { background: var(--warm); }
@@ -291,8 +309,9 @@ input  { font-family: inherit; }
 .guess-row.hit  { background: var(--accent-soft); }
 .guess-row.warm { background: var(--warm-soft); }
 .guess-row.focus {
-  outline: 3px solid var(--accent);
-  outline-offset: 2px;
+  border-color: var(--accent);
+  box-shadow: 4px 4px 0 var(--accent);
+  transform: rotate(0deg) translateY(-1px);
 }
 .guess-row .num {
   font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
