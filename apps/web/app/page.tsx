@@ -585,8 +585,13 @@ function StatsStrip({
   focused: boolean;
 }) {
   return (
-    <div className="flex flex-col gap-1 px-1">
-      <span className="label">
+    // Fixed-height region so the pitch (flex-1 above) does not resize when
+    // a different guess is focused and the chip strip happens to wrap to
+    // a different number of rows. Internal scroll handles overflow.
+    <div
+      className="scroll-custom flex flex-col gap-1 overflow-y-auto px-1 lg:max-h-32 lg:min-h-32"
+    >
+      <span className="label shrink-0">
         {focused ? 'palpite selecionado · ' : 'último palpite · '}
         <span className="text-[color:var(--ink)]">{guess.guess.name}</span>
       </span>
