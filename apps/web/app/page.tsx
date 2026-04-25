@@ -5,6 +5,17 @@ import type { AttrCell, AttributeKey, Breakdown } from '@/lib/scoring';
 import { ATTRIBUTE_WEIGHTS, MAX_TOTAL_SCORE } from '@/lib/scoring';
 import { positionToCoord, guessTone, type Tone } from '@/lib/pitch';
 
+const TEASERS = [
+  'em quantas você consegue?',
+  'consegue em menos?',
+  'tente bater',
+  'duvido que vence',
+];
+
+function pickTeaser(seed: number): string {
+  return TEASERS[Math.abs(seed) % TEASERS.length];
+}
+
 type SearchResult = {
   id: number;
   name: string;
@@ -193,8 +204,7 @@ export default function HomePage() {
     }
   }
 
-  function copyShareText() {
-    if (!target) return;
+  function buildShareText(): string {
     // One emoji ball per guess, in chronological order, matching the on-screen
     // trail. ⚪ = cold, 🟡 = warm, 🟢 = hit (same club), ⭐ = the winning guess.
     const trail = guesses
@@ -209,10 +219,10 @@ export default function HomePage() {
       .join(' ');
     const lines = [
       `Players · #${editionNumber ?? 0}`,
-      `${target.name} em ${tries} ${tries === 1 ? 'tentativa' : 'tentativas'}`,
+      `Encontrei em ${tries} ${tries === 1 ? 'tentativa' : 'tentativas'} — em quantas você consegue?`,
       trail,
     ];
-    navigator.clipboard.writeText(lines.join('\n'));
+    return lines.join('\n');
   }
 
   return (
@@ -279,7 +289,7 @@ export default function HomePage() {
               guesses={guesses}
               target={target}
               editionNumber={editionNumber}
-              onShare={copyShareText}
+              onShareText={() => buildShareText()}
             />
           ) : (
             <GuessHistory
@@ -683,20 +693,64 @@ function WinPanel({
   guesses,
   target,
   editionNumber,
-  onShare,
+  onShareText,
 }: {
   guesses: GuessResponse[];
   target: TargetDetails;
   editionNumber: number | null;
-  onShare: () => void;
+  onShareText: () => string;
 }) {
-  const tries = guesses.length;
-  const [copied, setCopied] = useState(false);
-  function handleShare() {
-    onShare();
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1800);
+  const [copied, setCopied] = useState<'image' | 'text' | null>(null);
+  const captureRef = useRef<HTMLDivElement | null>(null);
+  const teaser = useMemo(
+    () => pickTeaser((editionNumber ?? 0) + (target.id ?? 0)),
+    [editionNumber, target.id],
+  );
+
+  async function handleShare() {
+    const text = onShareText();
+    let imageWritten = false;
+
+    if (captureRef.current && typeof window !== 'undefined') {
+      try {
+        const { toBlob } = await import('html-to-image');
+        const blob = await toBlob(captureRef.current, {
+          pixelRatio: 2,
+          cacheBust: true,
+          backgroundColor: '#fffdf6',
+        });
+        if (blob && navigator.clipboard && 'write' in navigator.clipboard) {
+          const items: Record<string, Blob> = { 'image/png': blob };
+          // Some browsers require text/plain alongside image; harmless to add.
+          // ClipboardItem accepts a record of MIME -> Blob.
+          items['text/plain'] = new Blob([text], { type: 'text/plain' });
+          await navigator.clipboard.write([new ClipboardItem(items)]);
+          imageWritten = true;
+        }
+      } catch (err) {
+        // Fall through to text-only.
+        // eslint-disable-next-line no-console
+        console.warn('Image clipboard write failed, falling back to text', err);
+      }
+    }
+
+    if (!imageWritten) {
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {}
+    }
+
+    setCopied(imageWritten ? 'image' : 'text');
+    setTimeout(() => setCopied(null), 2200);
   }
+
+  const copyLabel =
+    copied === 'image'
+      ? 'imagem copiada ✓'
+      : copied === 'text'
+        ? 'texto copiado ✓'
+        : 'compartilhar';
+
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-2">
       <div className="reveal-card">
@@ -732,10 +786,20 @@ function WinPanel({
         editionNumber={editionNumber}
       />
 
+      {/* Off-screen, spoiler-free version that the share button captures.
+          Same visual as the on-screen card, but the target name is replaced
+          with a provocative teaser so a link/image shared on social does
+          not give the answer away. */}
+      <ShareImageCapture
+        captureRef={captureRef}
+        guesses={guesses}
+        editionNumber={editionNumber}
+        teaser={teaser}
+      />
 
       <div className="flex flex-wrap gap-2">
         <button onClick={handleShare} className="btn">
-          {copied ? 'copiado ✓' : 'compartilhar'}
+          {copyLabel}
         </button>
         <button className="btn ghost" onClick={() => window.location.reload()}>
           revisar palpites
@@ -747,6 +811,72 @@ function WinPanel({
         focusedGuess={null}
         onFocus={() => {}}
       />
+    </div>
+  );
+}
+
+function ShareImageCapture({
+  captureRef,
+  guesses,
+  editionNumber,
+  teaser,
+}: {
+  captureRef: React.MutableRefObject<HTMLDivElement | null>;
+  guesses: GuessResponse[];
+  editionNumber: number | null;
+  teaser: string;
+}) {
+  const tries = guesses.length;
+  const trail = guesses.slice().reverse();
+  return (
+    <div
+      aria-hidden
+      style={{
+        position: 'fixed',
+        top: -10000,
+        left: -10000,
+        pointerEvents: 'none',
+        zIndex: -1,
+      }}
+    >
+      <div
+        ref={captureRef}
+        className="share-card"
+        style={{
+          width: 520,
+          transform: 'rotate(0deg)',
+          padding: '18px 22px',
+          gap: 14,
+        }}
+      >
+        <div className="head">
+          <span className="ttl" style={{ fontSize: 26 }}>
+            encontrei em{' '}
+            <span className="accent">{String(tries).padStart(2, '0')}</span>
+          </span>
+          <span className="meta">edição #{editionNumber ?? 0}</span>
+        </div>
+
+        <div className="share-trail" style={{ rowGap: 8 }}>
+          {trail.map((g, i) => {
+            const sameClubMatched = g.breakdown.sameCurrentClub?.matched ?? false;
+            const tone = guessTone(g.totalScore, sameClubMatched, MAX_TOTAL_SCORE);
+            const cls = g.isCorrect ? 'win' : tone;
+            return (
+              <span key={`${g.guess.id}-${i}`} className={`ball ${cls}`}>
+                {g.isCorrect ? '★' : i + 1}
+              </span>
+            );
+          })}
+        </div>
+
+        <div className="foot">
+          <span className="name" style={{ fontStyle: 'italic' }}>
+            {teaser}
+          </span>
+          <span>players game</span>
+        </div>
+      </div>
     </div>
   );
 }
