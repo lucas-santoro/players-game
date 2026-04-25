@@ -195,20 +195,22 @@ export default function HomePage() {
 
   function copyShareText() {
     if (!target) return;
+    // One emoji ball per guess, in chronological order, matching the on-screen
+    // trail. ⚪ = cold, 🟡 = warm, 🟢 = hit (same club), ⭐ = the winning guess.
+    const trail = guesses
+      .slice()
+      .reverse()
+      .map((g) => {
+        if (g.isCorrect) return '⭐';
+        const sameClub = g.breakdown.sameCurrentClub?.matched ?? false;
+        const tone = guessTone(g.totalScore, sameClub, MAX_TOTAL_SCORE);
+        return tone === 'hit' ? '🟢' : tone === 'warm' ? '🟡' : '⚪';
+      })
+      .join(' ');
     const lines = [
       `Players · #${editionNumber ?? 0}`,
       `${target.name} em ${tries} ${tries === 1 ? 'tentativa' : 'tentativas'}`,
-      '',
-      ...guesses
-        .slice()
-        .reverse()
-        .map((g) => {
-          const matches = STAT_CHIP_ORDER.filter(
-            (k) => g.breakdown[k]?.matched,
-          ).length;
-          const blocks = STAT_CHIP_ORDER.length;
-          return `${'🟩'.repeat(matches)}${'🟨'.repeat(blocks - matches >= 0 ? Math.min(2, blocks - matches) : 0)}${'⬛'.repeat(Math.max(0, blocks - matches - 2))}`;
-        }),
+      trail,
     ];
     navigator.clipboard.writeText(lines.join('\n'));
   }
@@ -724,32 +726,12 @@ function WinPanel({
         </div>
       </div>
 
-      <div className="share-card">
-        <div className="flex items-center justify-between">
-          <b>Players · #{editionNumber ?? 0}</b>
-          <span>{String(tries).padStart(2, '0')} tentativas</span>
-        </div>
-        <div className="mt-1" style={{ letterSpacing: '0.1em' }}>
-          {guesses
-            .slice()
-            .reverse()
-            .map((g, i) => {
-              const matches = STAT_CHIP_ORDER.filter(
-                (k) => g.breakdown[k]?.matched,
-              ).length;
-              const blocks = STAT_CHIP_ORDER.length;
-              const warm = Math.min(2, blocks - matches);
-              const cold = Math.max(0, blocks - matches - 2);
-              return (
-                <div key={i}>
-                  {'🟩'.repeat(matches)}
-                  {'🟨'.repeat(warm)}
-                  {'⬛'.repeat(cold)}
-                </div>
-              );
-            })}
-        </div>
-      </div>
+      <ShareScorecard
+        guesses={guesses}
+        target={target}
+        editionNumber={editionNumber}
+      />
+
 
       <div className="flex flex-wrap gap-2">
         <button onClick={handleShare} className="btn">
@@ -765,6 +747,52 @@ function WinPanel({
         focusedGuess={null}
         onFocus={() => {}}
       />
+    </div>
+  );
+}
+
+function ShareScorecard({
+  guesses,
+  target,
+  editionNumber,
+}: {
+  guesses: GuessResponse[];
+  target: TargetDetails;
+  editionNumber: number | null;
+}) {
+  const tries = guesses.length;
+  const trail = guesses.slice().reverse(); // oldest -> newest
+  return (
+    <div className="share-card">
+      <div className="head">
+        <span className="ttl">
+          encontrei em{' '}
+          <span className="accent">{String(tries).padStart(2, '0')}</span>
+        </span>
+        <span className="meta">edição #{editionNumber ?? 0}</span>
+      </div>
+
+      <div className="share-trail" aria-label="trilha de palpites">
+        {trail.map((g, i) => {
+          const sameClubMatched = g.breakdown.sameCurrentClub?.matched ?? false;
+          const tone = guessTone(g.totalScore, sameClubMatched, MAX_TOTAL_SCORE);
+          const cls = g.isCorrect ? 'win' : tone;
+          return (
+            <span
+              key={`${g.guess.id}-${i}`}
+              className={`ball ${cls}`}
+              title={`#${String(i + 1).padStart(2, '0')} · ${g.guess.name}`}
+            >
+              {g.isCorrect ? '★' : i + 1}
+            </span>
+          );
+        })}
+      </div>
+
+      <div className="foot">
+        <span className="name">{target.name}</span>
+        <span>players game</span>
+      </div>
     </div>
   );
 }

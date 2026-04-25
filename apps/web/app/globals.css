@@ -479,13 +479,96 @@ input  { font-family: inherit; }
 .share-card {
   border: 2px solid var(--ink);
   border-radius: 12px;
-  padding: 10px 12px;
+  padding: 12px 14px;
   background: var(--paper-card);
-  font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 12px;
-  line-height: 1.6;
   transform: rotate(0.5deg);
   box-shadow: 3px 3px 0 var(--ink);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.share-card .head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1.5px dashed var(--ink);
+  padding-bottom: 8px;
+}
+.share-card .head .ttl {
+  font-family: var(--font-hand-bold), 'Caveat', ui-rounded, cursive;
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 1;
+}
+.share-card .head .ttl .accent {
+  color: var(--accent);
+}
+.share-card .head .meta {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+  text-transform: uppercase;
+  text-align: right;
+}
+
+.share-trail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.share-trail .ball {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  background: var(--paper-card);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 600;
+  box-shadow: 1px 1px 0 var(--ink);
+  flex-shrink: 0;
+  color: var(--ink);
+}
+.share-trail .ball.hit  { background: var(--accent); color: #fff; }
+.share-trail .ball.warm { background: var(--warm); }
+.share-trail .ball.win  {
+  background: var(--accent);
+  color: #fff;
+  width: 32px;
+  height: 32px;
+  font-size: 14px;
+  box-shadow: 2px 2px 0 var(--ink);
+}
+.share-trail .arrow {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  color: var(--muted-2);
+}
+
+.share-card .foot {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: var(--muted);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.share-card .foot .name {
+  font-family: var(--font-hand-bold), 'Caveat', cursive;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 700;
 }
 
 .reveal-card {
