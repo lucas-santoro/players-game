@@ -331,31 +331,36 @@ function Header({
   }, [tries]);
 
   return (
-    <header className="flex flex-wrap items-end justify-between gap-3 pt-2">
-      <div>
+    <header className="flex items-start justify-between gap-3 pt-2">
+      <div className="min-w-0 flex-1">
         <div className="label">edição diária · n.º {editionNumber ?? '...'}</div>
         <h1
           className="hand-h mt-0.5 leading-none"
-          style={{ fontSize: 'clamp(2rem, 4vw, 2.8rem)' }}
+          style={{ fontSize: 'clamp(1.9rem, 4vw, 2.8rem)' }}
         >
           Players<span style={{ color: 'var(--accent)' }}>.</span>
         </h1>
-        <p className="mt-0.5 max-w-md text-sm sm:text-base" style={{ color: '#3b352d' }}>
+        <p
+          className="mt-0.5 max-w-md text-xs sm:text-base"
+          style={{ color: '#3b352d' }}
+        >
           adivinhe o jogador do dia. cada palpite vira um pino no campo.
         </p>
       </div>
-      <div className="flex flex-col items-end gap-0.5 text-right">
+      <div className="flex shrink-0 flex-col items-end gap-0.5 text-right">
         <span className="label">tentativas</span>
         <span
           className={`hand-h leading-none ${bump ? 'counter-bump' : ''}`}
           style={{
-            fontSize: 'clamp(2.2rem, 5vw, 3.2rem)',
+            fontSize: 'clamp(2rem, 5vw, 3.2rem)',
             color: won ? 'var(--accent)' : 'var(--ink)',
           }}
         >
           {String(tries).padStart(2, '0')}
         </span>
-        <span className="label">{date ? formatPtDate(date) : '...'}</span>
+        <span className="label whitespace-nowrap">
+          {date ? formatPtDate(date) : '...'}
+        </span>
       </div>
     </header>
   );
