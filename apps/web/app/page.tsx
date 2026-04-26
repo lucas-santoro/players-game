@@ -270,7 +270,7 @@ export default function HomePage() {
             onFocus={(id) => setFocusedGuess(id)}
           />
           <Legend />
-          {focusedGuessData && (
+          {!isWon && focusedGuessData && (
             <StatsStrip
               guess={focusedGuessData}
               focused={focusedGuess === focusedGuessData.guess.id}
