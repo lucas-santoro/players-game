@@ -106,6 +106,7 @@ export default function HomePage() {
   const [error, setError] = useState<string | null>(null);
   const [activeIdx, setActiveIdx] = useState(0);
   const [focusedGuess, setFocusedGuess] = useState<number | null>(null);
+  const [reviewMode, setReviewMode] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -270,7 +271,7 @@ export default function HomePage() {
             onFocus={(id) => setFocusedGuess(id)}
           />
           <Legend />
-          {!isWon && focusedGuessData && (
+          {(!isWon || reviewMode) && focusedGuessData && (
             <StatsStrip
               guess={focusedGuessData}
               focused={focusedGuess === focusedGuessData.guess.id}
@@ -290,6 +291,10 @@ export default function HomePage() {
               target={target}
               editionNumber={editionNumber}
               onShareText={() => buildShareText()}
+              reviewMode={reviewMode}
+              onToggleReview={() => setReviewMode((v) => !v)}
+              focusedGuess={focusedGuess}
+              onFocus={(id) => setFocusedGuess(id)}
             />
           ) : (
             <GuessHistory
@@ -699,11 +704,19 @@ function WinPanel({
   target,
   editionNumber,
   onShareText,
+  reviewMode,
+  onToggleReview,
+  focusedGuess,
+  onFocus,
 }: {
   guesses: GuessResponse[];
   target: TargetDetails;
   editionNumber: number | null;
   onShareText: () => string;
+  reviewMode: boolean;
+  onToggleReview: () => void;
+  focusedGuess: number | null;
+  onFocus: (id: number) => void;
 }) {
   const [copied, setCopied] = useState<'image' | 'text' | null>(null);
   const captureRef = useRef<HTMLDivElement | null>(null);
@@ -806,15 +819,19 @@ function WinPanel({
         <button onClick={handleShare} className="btn">
           {copyLabel}
         </button>
-        <button className="btn ghost" onClick={() => window.location.reload()}>
-          revisar palpites
+        <button
+          className="btn ghost"
+          onClick={onToggleReview}
+          aria-pressed={reviewMode}
+        >
+          {reviewMode ? 'fechar revisão' : 'revisar palpites'}
         </button>
       </div>
 
       <GuessHistory
         guesses={guesses}
-        focusedGuess={null}
-        onFocus={() => {}}
+        focusedGuess={focusedGuess}
+        onFocus={onFocus}
       />
     </div>
   );
