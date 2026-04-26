@@ -106,7 +106,6 @@ export default function HomePage() {
   const [error, setError] = useState<string | null>(null);
   const [activeIdx, setActiveIdx] = useState(0);
   const [focusedGuess, setFocusedGuess] = useState<number | null>(null);
-  const [reviewMode, setReviewMode] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -271,7 +270,7 @@ export default function HomePage() {
             onFocus={(id) => setFocusedGuess(id)}
           />
           <Legend />
-          {(!isWon || reviewMode) && focusedGuessData && (
+          {!isWon && focusedGuessData && (
             <StatsStrip
               guess={focusedGuessData}
               focused={focusedGuess === focusedGuessData.guess.id}
@@ -291,8 +290,6 @@ export default function HomePage() {
               target={target}
               editionNumber={editionNumber}
               onShareText={() => buildShareText()}
-              reviewMode={reviewMode}
-              onToggleReview={() => setReviewMode((v) => !v)}
               focusedGuess={focusedGuess}
               onFocus={(id) => setFocusedGuess(id)}
             />
@@ -704,8 +701,6 @@ function WinPanel({
   target,
   editionNumber,
   onShareText,
-  reviewMode,
-  onToggleReview,
   focusedGuess,
   onFocus,
 }: {
@@ -713,8 +708,6 @@ function WinPanel({
   target: TargetDetails;
   editionNumber: number | null;
   onShareText: () => string;
-  reviewMode: boolean;
-  onToggleReview: () => void;
   focusedGuess: number | null;
   onFocus: (id: number) => void;
 }) {
@@ -818,13 +811,6 @@ function WinPanel({
       <div className="flex flex-wrap gap-2">
         <button onClick={handleShare} className="btn">
           {copyLabel}
-        </button>
-        <button
-          className="btn ghost"
-          onClick={onToggleReview}
-          aria-pressed={reviewMode}
-        >
-          {reviewMode ? 'fechar revisão' : 'revisar palpites'}
         </button>
       </div>
 
