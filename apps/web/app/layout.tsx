@@ -20,15 +20,15 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Players · Adivinhe o jogador do dia',
+  title: 'Players · Guess the player of the day',
   description:
-    'Jogo diário no estilo Wordle com jogadores de futebol. Cada palpite vira um pino no campo.',
+    'Daily Wordle-style guessing game with football players. Each guess places a pin on the pitch.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
-      lang="pt-BR"
+      lang="en"
       className={`${hand.variable} ${handBold.variable} ${mono.variable}`}
     >
       <body>{children}</body>

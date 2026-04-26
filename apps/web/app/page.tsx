@@ -6,10 +6,10 @@ import { ATTRIBUTE_WEIGHTS, MAX_TOTAL_SCORE } from '@/lib/scoring';
 import { positionToCoord, guessTone, type Tone } from '@/lib/pitch';
 
 const TEASERS = [
-  'em quantas você consegue?',
-  'consegue em menos?',
-  'tente bater',
-  'duvido que vence',
+  'how few can you do it in?',
+  'can you beat it?',
+  'try to beat me',
+  "bet you can't",
 ];
 
 function pickTeaser(seed: number): string {
@@ -45,20 +45,20 @@ type GuessResponse = {
 };
 
 const ATTRIBUTE_LABELS: Record<AttributeKey, string> = {
-  sameCurrentClub: 'clube',
-  sameCurrentLeague: 'liga',
-  sameNationalTeam: 'seleção',
-  sameBirthCountry: 'nasc.',
-  sameContinent: 'continente',
-  sameSpecificPosition: 'posição',
-  sameGenericPosition: 'setor',
+  sameCurrentClub: 'club',
+  sameCurrentLeague: 'league',
+  sameNationalTeam: 'nat. team',
+  sameBirthCountry: 'born',
+  sameContinent: 'continent',
+  sameSpecificPosition: 'position',
+  sameGenericPosition: 'role',
   sameEra: 'era',
-  sameAge: 'idade',
-  sameHeightCm: 'altura',
-  sameFoot: 'pé',
-  wereTeammates: 'companheiros',
-  sharedTrophy: 'troféu',
-  sameJerseyNumber: 'camisa',
+  sameAge: 'age',
+  sameHeightCm: 'height',
+  sameFoot: 'foot',
+  wereTeammates: 'teammates',
+  sharedTrophy: 'trophy',
+  sameJerseyNumber: 'jersey',
 };
 
 const STAT_CHIP_ORDER: AttributeKey[] = [
@@ -75,13 +75,13 @@ const STAT_CHIP_ORDER: AttributeKey[] = [
   'sameFoot',
 ];
 
-const PT_MONTHS = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
+const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 
-function formatPtDate(iso: string | null): string {
+function formatDate(iso: string | null): string {
   if (!iso) return '· · ·';
   const d = new Date(iso + 'T00:00:00Z');
   if (isNaN(d.getTime())) return iso;
-  return `${d.getUTCDate().toString().padStart(2, '0')} ${PT_MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+  return `${d.getUTCDate().toString().padStart(2, '0')} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
 }
 
 function storageKey(date: string) {
@@ -124,7 +124,7 @@ export default function HomePage() {
           } catch {}
         }
       })
-      .catch(() => setError('Falha ao carregar o jogo de hoje.'));
+      .catch(() => setError("Failed to load today's game."));
   }, []);
 
   useEffect(() => {
@@ -158,7 +158,7 @@ export default function HomePage() {
 
   // The chip strip below the pitch follows whichever guess is currently
   // focused (clicked on the pitch or in the history). Defaults to the
-  // newest guess so it has something to show after a fresh palpite.
+  // newest guess so it has something to show after a fresh attempt.
   const latestGuess = guesses[0];
   const focusedGuessData =
     guesses.find((g) => g.guess.id === focusedGuess) ?? latestGuess;
@@ -174,7 +174,7 @@ export default function HomePage() {
         body: JSON.stringify({ playerId }),
       });
       if (!res.ok) {
-        setError(`Erro ${res.status}`);
+        setError(`Error ${res.status}`);
         return;
       }
       const data: GuessResponse = await res.json();
@@ -219,7 +219,7 @@ export default function HomePage() {
       .join(' ');
     const lines = [
       `Players · #${editionNumber ?? 0}`,
-      `Encontrei em ${tries} ${tries === 1 ? 'tentativa' : 'tentativas'} — em quantas você consegue?`,
+      `Found in ${tries} ${tries === 1 ? 'attempt' : 'attempts'} — how few can you do it in?`,
       trail,
     ];
     return lines.join('\n');
@@ -255,7 +255,7 @@ export default function HomePage() {
 
       {error && (
         <div className="sheet tilt-l mt-3 px-4 py-2" style={{ background: 'var(--cold-soft)' }}>
-          <span className="label" style={{ color: 'var(--cold)' }}>erro</span>
+          <span className="label" style={{ color: 'var(--cold)' }}>error</span>
           <p className="mt-1 text-sm" style={{ color: 'var(--ink)' }}>{error}</p>
         </div>
       )}
@@ -278,7 +278,7 @@ export default function HomePage() {
           )}
           {!guesses.length && (
             <div className="empty-tip mt-1">
-              o alvo aparece em algum lugar do campo · seu palpite vai mostrar onde
+              the target sits somewhere on the pitch · your guess will show where
             </div>
           )}
         </div>
@@ -335,7 +335,7 @@ function Header({
   return (
     <header className="flex items-start justify-between gap-3 pt-2">
       <div className="min-w-0 flex-1">
-        <div className="label">edição diária · n.º {editionNumber ?? '...'}</div>
+        <div className="label">daily edition · no. {editionNumber ?? '...'}</div>
         <h1
           className="hand-h mt-0.5 leading-none"
           style={{ fontSize: 'clamp(1.9rem, 4vw, 2.8rem)' }}
@@ -346,11 +346,11 @@ function Header({
           className="mt-0.5 max-w-md text-xs sm:text-base"
           style={{ color: '#3b352d' }}
         >
-          adivinhe o jogador do dia. cada palpite vira um pino no campo.
+          guess the player of the day. each guess places a pin on the pitch.
         </p>
       </div>
       <div className="flex shrink-0 flex-col items-end gap-0.5 text-right">
-        <span className="label">tentativas</span>
+        <span className="label">attempts</span>
         <span
           className={`hand-h leading-none ${bump ? 'counter-bump' : ''}`}
           style={{
@@ -361,7 +361,7 @@ function Header({
           {String(tries).padStart(2, '0')}
         </span>
         <span className="label whitespace-nowrap">
-          {date ? formatPtDate(date) : '...'}
+          {date ? formatDate(date) : '...'}
         </span>
       </div>
     </header>
@@ -403,7 +403,7 @@ function SearchBox({
 
   return (
     <section className="mt-5">
-      <span className="label">próximo palpite</span>
+      <span className="label">next guess</span>
       <div className="field-row relative mt-2">
         <input
           ref={inputRef}
@@ -415,7 +415,7 @@ function SearchBox({
           onFocus={() => setShowDropdown(true)}
           onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
           onKeyDown={onKeyDown}
-          placeholder="digite um nome…"
+          placeholder="type a name…"
           className="field"
           disabled={loading}
           autoComplete="off"
@@ -426,7 +426,7 @@ function SearchBox({
           disabled={loading || results.length === 0}
           className="btn"
         >
-          {loading ? '…' : 'palpitar'}
+          {loading ? '…' : 'guess'}
         </button>
         {showDropdown && results.length > 0 && (
           <ul className="dropdown" style={{ left: 0, right: 110 }}>
@@ -456,7 +456,7 @@ function SearchBox({
                       {[r.currentClubName, r.citizenship].filter(Boolean).join(' · ') || '—'}
                     </div>
                   </div>
-                  {used && <span className="label">tentado</span>}
+                  {used && <span className="label">tried</span>}
                 </li>
               );
             })}
@@ -489,7 +489,7 @@ function Pitch({
 
   return (
     <div className="sheet tilt-l p-2 lg:flex lg:min-h-0 lg:flex-1 lg:flex-col">
-      <div className="label mb-1 px-1">campo · cada pino é um palpite</div>
+      <div className="label mb-1 px-1">pitch · each pin is a guess</div>
       <div className="pitch lg:aspect-auto lg:flex-1">
         <div className="pitch-circle" />
 
@@ -570,7 +570,7 @@ function Pitch({
           return (
             <div className="pin target" style={{ top: '50%', left: '50%' }}>
               <div className="bub">?</div>
-              <div className="tag">alvo · ?</div>
+              <div className="tag">target · ?</div>
             </div>
           );
         })()}
@@ -583,15 +583,15 @@ function Legend() {
   return (
     <div className="flex flex-wrap items-center gap-3 px-1">
       <span className="label" style={{ display: 'inline-flex', alignItems: 'center' }}>
-        <span className="swatch hit" /> acerto
+        <span className="swatch hit" /> match
       </span>
       <span className="label" style={{ display: 'inline-flex', alignItems: 'center' }}>
-        <span className="swatch warm" /> perto
+        <span className="swatch warm" /> close
       </span>
       <span className="label" style={{ display: 'inline-flex', alignItems: 'center' }}>
-        <span className="swatch cold" /> longe
+        <span className="swatch cold" /> far
       </span>
-      <span className="label">↓ alvo é menor · ↑ alvo é maior · ✓ acerto</span>
+      <span className="label">↓ target is lower · ↑ target is higher · ✓ exact</span>
     </div>
   );
 }
@@ -611,7 +611,7 @@ function StatsStrip({
       className="scroll-custom flex flex-col gap-1 overflow-y-auto px-1 lg:max-h-32 lg:min-h-32"
     >
       <span className="label shrink-0">
-        {focused ? 'palpite selecionado · ' : 'último palpite · '}
+        {focused ? 'selected guess · ' : 'last guess · '}
         <span className="text-[color:var(--ink)]">{guess.guess.name}</span>
       </span>
       <div className="flex flex-wrap gap-2">
@@ -647,9 +647,9 @@ function GuessHistory({
 }) {
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-1">
-      <span className="label px-1">histórico · do mais recente ao primeiro</span>
+      <span className="label px-1">history · newest first</span>
       {guesses.length === 0 ? (
-        <div className="note mt-2">faça seu primeiro palpite</div>
+        <div className="note mt-2">make your first guess</div>
       ) : (
         <div className="scroll-custom mt-2 min-h-0 flex-1 overflow-y-auto overflow-x-visible py-1 pr-2">
           {guesses.map((g, i) => {
@@ -678,7 +678,7 @@ function GuessHistory({
                   </div>
                   <div className="mono muted text-[11px] uppercase leading-tight">
                     {(g.breakdown.sameSpecificPosition?.guessValue as string | null) ??
-                      'posição —'}{' '}
+                      'position —'}{' '}
                     · {pct}%
                   </div>
                 </div>
@@ -757,10 +757,10 @@ function WinPanel({
 
   const copyLabel =
     copied === 'image'
-      ? 'imagem copiada ✓'
+      ? 'image copied ✓'
       : copied === 'text'
-        ? 'texto copiado ✓'
-        : 'compartilhar';
+        ? 'text copied ✓'
+        : 'share';
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-2">
@@ -778,7 +778,7 @@ function WinPanel({
               .join(' · ')}
           </div>
           <div className="mt-2 flex flex-wrap gap-1.5">
-            {target.dob && <span className="stat-chip hit">nasc. {target.dob}</span>}
+            {target.dob && <span className="stat-chip hit">born {target.dob}</span>}
             {target.marketValueEur && (
               <span className="stat-chip">
                 €{(Number(target.marketValueEur) / 1_000_000).toFixed(0)}M
@@ -859,10 +859,10 @@ function ShareImageCapture({
       >
         <div className="head">
           <span className="ttl" style={{ fontSize: 26 }}>
-            encontrei em{' '}
+            found in{' '}
             <span className="accent">{String(tries).padStart(2, '0')}</span>
           </span>
-          <span className="meta">edição #{editionNumber ?? 0}</span>
+          <span className="meta">edition #{editionNumber ?? 0}</span>
         </div>
 
         <div className="share-trail" style={{ rowGap: 8 }}>
@@ -904,13 +904,13 @@ function ShareScorecard({
     <div className="share-card">
       <div className="head">
         <span className="ttl">
-          encontrei em{' '}
+          found in{' '}
           <span className="accent">{String(tries).padStart(2, '0')}</span>
         </span>
-        <span className="meta">edição #{editionNumber ?? 0}</span>
+        <span className="meta">edition #{editionNumber ?? 0}</span>
       </div>
 
-      <div className="share-trail" aria-label="trilha de palpites">
+      <div className="share-trail" aria-label="guess trail">
         {trail.map((g, i) => {
           const sameClubMatched = g.breakdown.sameCurrentClub?.matched ?? false;
           const tone = guessTone(g.totalScore, sameClubMatched, MAX_TOTAL_SCORE);
@@ -940,14 +940,14 @@ function Footer() {
     <footer className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t-2 border-[color:var(--ink)] pt-2 text-[color:var(--muted-2)]">
       <span className="label">players · 2026 · low-fi</span>
       <SocialBar />
-      <span className="label">dados · transfermarkt</span>
+      <span className="label">data · transfermarkt</span>
     </footer>
   );
 }
 
 function SocialBar() {
   return (
-    <nav aria-label="redes sociais" className="flex items-center gap-2">
+    <nav aria-label="social" className="flex items-center gap-2">
       <SocialButton
         href="https://linkedin.com/in/lucas-santoro"
         label="LinkedIn"
@@ -972,7 +972,7 @@ function SocialBar() {
           />
         </svg>
       </SocialButton>
-      <SocialButton label="Instagram" title="Instagram (em breve)" disabled>
+      <SocialButton label="Instagram" title="Instagram (soon)" disabled>
         <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden focusable="false">
           <path
             fill="none"
@@ -984,7 +984,7 @@ function SocialBar() {
           />
         </svg>
       </SocialButton>
-      <SocialButton label="X" title="X (em breve)" disabled>
+      <SocialButton label="X" title="X (soon)" disabled>
         <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden focusable="false">
           <path
             fill="currentColor"
