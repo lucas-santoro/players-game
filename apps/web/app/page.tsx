@@ -485,12 +485,12 @@ function Pitch({
   const total = guesses.length;
   const ordered = guesses.slice().reverse();
   return (
-    <div className="block-card thick lg:flex lg:min-h-0 lg:flex-1 lg:flex-col">
+    <div className="block-card thick lg:flex lg:min-h-0 lg:flex-[1_1_auto] lg:flex-col">
       <div className="flex items-center justify-between border-b-2 border-[color:var(--ink)] px-3 py-2">
         <span className="eyebrow">field of play</span>
         <span className="eyebrow">{total > 0 ? `${total} pins` : 'awaiting kickoff'}</span>
       </div>
-      <div className="relative flex-1 p-2">
+      <div className="relative p-2 lg:flex-1 lg:min-h-0">
         <div className="pitch-frame relative h-full w-full lg:aspect-auto">
           <span className="corner tl" />
           <span className="corner tr" />
