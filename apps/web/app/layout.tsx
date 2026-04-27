@@ -1,17 +1,17 @@
 import type { Metadata } from 'next';
-import { Patrick_Hand, Caveat, JetBrains_Mono } from 'next/font/google';
+import { Barlow_Condensed, Barlow, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 
-const hand = Patrick_Hand({
+const display = Barlow_Condensed({
   subsets: ['latin'],
-  weight: '400',
-  variable: '--font-hand',
+  weight: ['400', '500', '600', '700', '800', '900'],
+  variable: '--font-display',
 });
 
-const handBold = Caveat({
+const body = Barlow({
   subsets: ['latin'],
-  weight: ['500', '700'],
-  variable: '--font-hand-bold',
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-body',
 });
 
 const mono = JetBrains_Mono({
@@ -29,7 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
-      className={`${hand.variable} ${handBold.variable} ${mono.variable}`}
+      className={`${display.variable} ${body.variable} ${mono.variable}`}
     >
       <body>{children}</body>
     </html>
