@@ -554,7 +554,7 @@ function Pitch({
               return (
                 <div className={`pin win ${anchor}`} style={{ top: `${y}%`, left: `${x}%` }}>
                   <div className="ball">★</div>
-                  <div className="nameplate" style={{ background: 'var(--gold)', color: 'var(--ink)' }}>
+                  <div className="nameplate" style={{ background: 'var(--gold)', color: 'var(--on-gold)' }}>
                     {target.name}
                   </div>
                 </div>

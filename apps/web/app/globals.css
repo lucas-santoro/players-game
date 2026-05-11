@@ -1,38 +1,89 @@
 @import "tailwindcss";
 
 :root {
-  color-scheme: light;
+  color-scheme: light dark;
 
-  /* === Base palette ===
-   * Sports broadcast / matchday programme aesthetic.
-   * Pitch green as primary (correctness signal — green = right in UI),
-   * gold as accent, near-white paper with subtle green tint. */
-  --paper: #f4f8f3;          /* page background — barely green tinted */
-  --paper-2: #fafdf8;        /* card surface */
-  --ink: #0b140e;            /* deep matt black with green bias */
+  /* === Light palette (default) ===
+   * Sports broadcast / matchday programme aesthetic. */
+  --paper: #f4f8f3;
+  --paper-2: #fafdf8;
+  --ink: #0b140e;
   --ink-2: #1f3424;
   --line: #1a2d1f;
   --muted: #2f5a3a;
   --muted-2: #6d8a73;
 
-  --primary: #16a34a;        /* pitch green 600 — main correctness signal */
-  --primary-deep: #15803d;   /* green 700 — hover / depth */
-  --primary-soft: #dcfce7;   /* green 100 — soft backgrounds */
+  --primary: #16a34a;        /* pitch green 600 */
+  --primary-deep: #15803d;
+  --primary-soft: #dcfce7;
 
-  --gold: #fbbf24;           /* CTA / win gold 400 — unchanged */
-  --gold-deep: #b45309;      /* amber 700 */
-  --gold-soft: #fef3c7;      /* amber 100 */
+  --gold: #fbbf24;
+  --gold-deep: #b45309;
+  --gold-soft: #fef3c7;
 
-  --warn: #f59e0b;           /* directional hint amber */
+  --warn: #f59e0b;
   --warn-soft: #fef3c7;
 
-  --error: #b94a3b;          /* terracotta — only for error states */
+  --error: #b94a3b;
   --error-soft: #f6e7e3;
 
-  /* Pitch */
   --pitch-bg: #ecefe3;
   --pitch-bg-2: #e2e6d6;
   --pitch-line: #0b140e;
+
+  /* Inverse-surface tokens for elements that should ALWAYS read as a
+     dark callout against the page (scoreboard, match-tag, nameplate).
+     These don't swap with the mode — they tilt darker in dark mode so
+     the contrast stays. */
+  --surface-inverse-bg: #0b140e;
+  --surface-inverse-text: #f4f8f3;
+  --surface-inverse-muted: #6d8a73;
+
+  /* Text that always sits on a gold background. Gold (--gold) stays
+     the same bright yellow in both themes, so the text on top needs
+     to stay dark regardless of the mode swap. */
+  --on-gold: #0b140e;
+  --on-gold-muted: #2f5a3a;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* === Dark palette ===
+     * Same green + gold language, deep "broadcast studio" base.
+     * Primary bumps to a slightly brighter green so it pops on dark. */
+    --paper: #0f1612;
+    --paper-2: #1a221d;
+    --ink: #eaf1e8;
+    --ink-2: #b5c3b8;
+    --line: #2a3530;
+    --muted: #8aa090;
+    --muted-2: #5d6e63;
+
+    --primary: #22c55e;         /* green 500 — brighter for dark bg */
+    --primary-deep: #16a34a;
+    --primary-soft: #14361f;    /* dark green tint */
+
+    --gold: #fbbf24;
+    --gold-deep: #fcd34d;       /* invert: lighter gold for hover on dark */
+    --gold-soft: #3a2c10;       /* dark amber tint */
+
+    --warn: #fbbf24;
+    --warn-soft: #3a2c10;
+
+    --error: #ef6f5f;           /* brighter terracotta for dark */
+    --error-soft: #3a1c17;
+
+    --pitch-bg: #182420;
+    --pitch-bg-2: #131c19;
+    --pitch-line: #eaf1e8;
+
+    /* In dark mode the "inverse surface" goes EVEN deeper than the page
+       so the scoreboard / match-tag still read as a contrasting callout
+       (now a darker patch on a dark page, the opposite polarity). */
+    --surface-inverse-bg: #050a07;
+    --surface-inverse-text: #eaf1e8;
+    --surface-inverse-muted: #5d6e63;
+  }
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -93,8 +144,8 @@ input  { font-family: inherit; }
   font-size: 11px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--surface-inverse-bg);
+  color: var(--surface-inverse-text);
   padding: 4px 10px 3px;
   line-height: 1;
 }
@@ -123,7 +174,7 @@ input  { font-family: inherit; }
   align-items: center;
   gap: 4px;
   background: var(--gold);
-  color: var(--ink);
+  color: var(--on-gold);
   font-family: var(--font-display), sans-serif;
   font-weight: 700;
   font-size: 11px;
@@ -172,7 +223,7 @@ input  { font-family: inherit; }
 
 .btn-gold {
   background: var(--gold);
-  color: var(--ink);
+  color: var(--on-gold);
   font-family: var(--font-display), sans-serif;
   font-weight: 700;
   font-size: 14px;
@@ -185,7 +236,7 @@ input  { font-family: inherit; }
   align-items: center;
   gap: 10px;
 }
-.btn-gold:hover { background: var(--gold-deep); color: #fff; }
+.btn-gold:hover { background: var(--gold-deep); color: var(--on-gold); }
 
 .btn-ghost {
   background: transparent;
@@ -316,7 +367,7 @@ input  { font-family: inherit; }
   transition: transform 180ms ease, background 180ms ease;
 }
 .pin.cold .ball { background: var(--paper-2); }
-.pin.warm .ball { background: var(--gold); color: var(--ink); }
+.pin.warm .ball { background: var(--gold); color: var(--on-gold); }
 .pin.hit  .ball { background: var(--primary); color: #fff; }
 .pin.target .ball {
   background: var(--paper);
@@ -325,7 +376,7 @@ input  { font-family: inherit; }
 }
 .pin.win .ball {
   background: var(--gold);
-  color: var(--ink);
+  color: var(--on-gold);
   width: 42px;
   height: 42px;
   font-size: 18px;
@@ -334,8 +385,8 @@ input  { font-family: inherit; }
 }
 .pin:not(.target):hover .ball { transform: scale(1.1); }
 .pin.focus .ball {
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--surface-inverse-bg);
+  color: var(--surface-inverse-text);
   outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
@@ -350,8 +401,8 @@ input  { font-family: inherit; }
   font-size: 10px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--surface-inverse-bg);
+  color: var(--surface-inverse-text);
   padding: 3px 7px 2px;
   white-space: nowrap;
   line-height: 1;
@@ -399,7 +450,9 @@ input  { font-family: inherit; }
 }
 .chip.hit  { background: var(--primary); border-color: var(--ink); color: #fff; }
 .chip.hit .k, .chip.hit .v { color: #fff; }
-.chip.warm { background: var(--gold); }
+.chip.warm { background: var(--gold); color: var(--on-gold); }
+.chip.warm .k { color: var(--on-gold-muted); }
+.chip.warm .v { color: var(--on-gold); }
 .chip.cold { background: var(--paper-2); }
 
 /* ===== Guess row ===== */
@@ -424,8 +477,8 @@ input  { font-family: inherit; }
   background: var(--gold-soft);
 }
 .guess-row.focus {
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--surface-inverse-bg);
+  color: var(--surface-inverse-text);
 }
 .guess-row .num {
   font-family: var(--font-display), sans-serif;
@@ -473,6 +526,7 @@ input  { font-family: inherit; }
 .player-card {
   border: 3px solid var(--ink);
   background: var(--gold);
+  color: var(--on-gold);
   padding: 14px;
   display: grid;
   grid-template-columns: 96px 1fr;
@@ -491,8 +545,8 @@ input  { font-family: inherit; }
   position: absolute;
   top: -10px;
   right: 12px;
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--surface-inverse-bg);
+  color: var(--surface-inverse-text);
   padding: 4px 12px 3px;
   font-family: var(--font-display), sans-serif;
   font-weight: 800;
@@ -504,9 +558,9 @@ input  { font-family: inherit; }
 /* ===== Share scorecard ===== */
 
 .scoreboard {
-  border: 3px solid var(--ink);
-  background: var(--ink);
-  color: var(--paper);
+  border: 3px solid var(--surface-inverse-bg);
+  background: var(--surface-inverse-bg);
+  color: var(--surface-inverse-text);
   padding: 14px 16px;
   display: flex;
   flex-direction: column;
@@ -545,7 +599,7 @@ input  { font-family: inherit; }
 .scoreboard .trail .ball {
   width: 24px;
   height: 24px;
-  border: 2px solid var(--paper);
+  border: 2px solid var(--surface-inverse-text);
   background: transparent;
   display: inline-flex;
   align-items: center;
@@ -553,12 +607,12 @@ input  { font-family: inherit; }
   font-family: var(--font-display), monospace;
   font-size: 11px;
   font-weight: 800;
-  color: var(--paper);
+  color: var(--surface-inverse-text);
 }
 .scoreboard .trail .ball.hit  { background: var(--primary); border-color: var(--primary); color: #fff; }
-.scoreboard .trail .ball.warm { background: var(--gold);    border-color: var(--gold);    color: var(--ink); }
+.scoreboard .trail .ball.warm { background: var(--gold);    border-color: var(--gold);    color: var(--surface-inverse-bg); }
 .scoreboard .trail .ball.win  {
-  background: var(--gold); border-color: var(--gold); color: var(--ink);
+  background: var(--gold); border-color: var(--gold); color: var(--surface-inverse-bg);
   width: 30px; height: 30px; font-size: 13px;
 }
 .scoreboard .foot {
@@ -579,7 +633,7 @@ input  { font-family: inherit; }
   font-size: 16px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--paper);
+  color: var(--surface-inverse-text);
 }
 
 /* ===== Empty / sticky note ===== */
