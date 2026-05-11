@@ -2,13 +2,23 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import * as schema from '@/drizzle/schema';
 
-const connectionString = process.env.DATABASE_URL;
-if (!connectionString) {
-  throw new Error('DATABASE_URL is not set');
+type Drizzle = ReturnType<typeof drizzle<typeof schema>>;
+
+let cached: Drizzle | null = null;
+
+function getDb(): Drizzle {
+  if (cached) return cached;
+  const url = process.env.DATABASE_URL;
+  if (!url) throw new Error('DATABASE_URL is not set');
+  cached = drizzle(postgres(url, { prepare: false }), { schema });
+  return cached;
 }
 
-const client = postgres(connectionString, { prepare: false });
+export const db = new Proxy({} as Drizzle, {
+  get(_target, prop, _receiver) {
+    const real = getDb();
+    return Reflect.get(real, prop, real);
+  },
+});
 
-export const db = drizzle(client, { schema });
-
-export type Db = typeof db;
+export type Db = Drizzle;
