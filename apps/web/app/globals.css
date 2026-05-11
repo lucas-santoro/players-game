@@ -5,30 +5,34 @@
 
   /* === Base palette ===
    * Sports broadcast / matchday programme aesthetic.
-   * Championship red as primary, gold as accent, off-white paper. */
-  --paper: #fef2f2;          /* page background */
-  --paper-2: #fff7f5;        /* card surface */
-  --ink: #1a0606;            /* near-black with red bias for warmth */
-  --ink-2: #4a1a1a;
-  --line: #2a0d0d;
-  --muted: #7f1d1d;
-  --muted-2: #b1635a;
+   * Pitch green as primary (correctness signal — green = right in UI),
+   * gold as accent, near-white paper with subtle green tint. */
+  --paper: #f4f8f3;          /* page background — barely green tinted */
+  --paper-2: #fafdf8;        /* card surface */
+  --ink: #0b140e;            /* deep matt black with green bias */
+  --ink-2: #1f3424;
+  --line: #1a2d1f;
+  --muted: #2f5a3a;
+  --muted-2: #6d8a73;
 
-  --primary: #dc2626;        /* championship red 600 */
-  --primary-deep: #991b1b;   /* red 800 */
-  --primary-soft: #fee2e2;   /* red 100 */
+  --primary: #16a34a;        /* pitch green 600 — main correctness signal */
+  --primary-deep: #15803d;   /* green 700 — hover / depth */
+  --primary-soft: #dcfce7;   /* green 100 — soft backgrounds */
 
-  --gold: #fbbf24;           /* CTA / win gold 400 */
+  --gold: #fbbf24;           /* CTA / win gold 400 — unchanged */
   --gold-deep: #b45309;      /* amber 700 */
   --gold-soft: #fef3c7;      /* amber 100 */
 
   --warn: #f59e0b;           /* directional hint amber */
   --warn-soft: #fef3c7;
 
+  --error: #b94a3b;          /* terracotta — only for error states */
+  --error-soft: #f6e7e3;
+
   /* Pitch */
-  --pitch-bg: #f1ede0;
-  --pitch-bg-2: #e8e3d2;
-  --pitch-line: #1a0606;
+  --pitch-bg: #ecefe3;
+  --pitch-bg-2: #e2e6d6;
+  --pitch-line: #0b140e;
 }
 
 *, *::before, *::after { box-sizing: border-box; }

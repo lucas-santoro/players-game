@@ -248,9 +248,9 @@ export default function HomePage() {
       {error && (
         <div
           className="block-card mt-3 px-4 py-3"
-          style={{ background: 'var(--primary-soft)', borderColor: 'var(--primary)' }}
+          style={{ background: 'var(--error-soft)', borderColor: 'var(--error)' }}
         >
-          <span className="eyebrow" style={{ color: 'var(--primary-deep)' }}>error</span>
+          <span className="eyebrow" style={{ color: 'var(--error)' }}>error</span>
           <p className="mt-1 text-sm" style={{ color: 'var(--ink)' }}>{error}</p>
         </div>
       )}
