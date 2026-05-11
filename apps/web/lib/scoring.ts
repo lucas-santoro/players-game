@@ -5,7 +5,7 @@ export type AttributeKey =
   | 'sameSpecificPosition'
   | 'sameBirthCountry'
   | 'sameCurrentLeague'
-  | 'sameEra'
+  | 'sameRetired'
   | 'sameGenericPosition'
   | 'sharedTrophy'
   | 'sameContinent'
@@ -21,7 +21,7 @@ export const ATTRIBUTE_WEIGHTS: Record<AttributeKey, number> = {
   sameSpecificPosition: 300,
   sameBirthCountry: 250,
   sameCurrentLeague: 200,
-  sameEra: 200,
+  sameRetired: 200,
   sameGenericPosition: 150,
   sharedTrophy: 150,
   sameContinent: 100,
@@ -79,11 +79,6 @@ export type EnrichedPlayer = {
   isActive: boolean;
   photoUrl: string | null;
 };
-
-function sameEra(a: number | null, b: number | null): boolean {
-  if (a === null || b === null) return false;
-  return Math.abs(a - b) <= 5;
-}
 
 function ageYears(dob: string | null, today: Date = new Date()): number | null {
   if (!dob) return null;
@@ -170,11 +165,11 @@ export function computeScore(
       guessValue: guess.currentLeagueName,
       hint: null,
     },
-    sameEra: {
-      matched: sameEra(target.lastSeason, guess.lastSeason),
-      weight: ATTRIBUTE_WEIGHTS.sameEra,
-      guessValue: guess.lastSeason ? String(guess.lastSeason) : null,
-      hint: numericHint(target.lastSeason, guess.lastSeason),
+    sameRetired: {
+      matched: target.isActive === guess.isActive,
+      weight: ATTRIBUTE_WEIGHTS.sameRetired,
+      guessValue: guess.isActive ? 'no' : 'yes',
+      hint: null,
     },
     sameGenericPosition: {
       matched: bothMatch(target.genericPosition, guess.genericPosition),
